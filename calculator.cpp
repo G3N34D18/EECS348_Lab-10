@@ -3,10 +3,13 @@
 #include <utility>
 
 std::pair<std::string, std::string> parse_num(const std::string &expression) 
-{ 
+{  
+    // empty strings for whole and decimals
     std::string whole = "";
     std::string decimal = "";
+    // gets position of decimal
     size_t decPos = expression.find(".");
+    // adds necessary values to whole and decimal sections based on placement of decimal
     if (decPos != std::string::npos) 
     {
         for (size_t i = 0; i < decPos; i++)
@@ -18,17 +21,19 @@ std::pair<std::string, std::string> parse_num(const std::string &expression)
             decimal += expression[i];
         }
     }
+    // if no decimal, all whole
     else
     {
         whole = expression;
         decimal = "0";
     }
+    // returns pair of strings
     return {whole, decimal};
 }
-
+// parses number to decimal 
 double parse_number(const std::string &expression)
 {
-    
+    // verifies positivity
     bool is_negative = false;
     size_t start_index = 0;
 
@@ -38,30 +43,30 @@ double parse_number(const std::string &expression)
     } else if (expression[0] == '+') {
         start_index = 1; 
     }
-
+    // parses to whole and decimal of double
     std::string whole_part = "";
     std::string decimal_part = "";
     size_t decimal_pos = expression.find('.');
-
+    // spilts based on position of decimal
     if (decimal_pos != std::string::npos) {
         whole_part = expression.substr(start_index, decimal_pos - start_index);
         decimal_part = expression.substr(decimal_pos + 1);
     } else {
         whole_part = expression.substr(start_index);
     }
-
+    // creates double for result to be put in
     double result = 0.0;
     for (char c : whole_part) {
         result = result * 10 + (c - '0');
     }
-
+    // decimal value is handled
     double decimal_value = 0.0;
     double place_value = 0.1;
     for (char c : decimal_part) {
         decimal_value += (c - '0') * place_value;
         place_value *= 0.1;
     }
-
+    // decimal is added to result
     result += decimal_value;
 
     if (is_negative) {
@@ -70,29 +75,34 @@ double parse_number(const std::string &expression)
 
     return result;
 }
+// verifies digit and not other character
 bool isDigit(char c)
 {
     return c >= '0' && c <= '9';
 }
+
 bool isValidDouble(const std::string &expression)
 {
     bool signPresent = false;
     bool decimalPresent = false;
     bool digitPresent = false;
-
+    
     for (size_t i = 0; i < expression.size(); i++)
-    {
+    {   
+        // looks for proper location of + and -
         char c = expression[i];
         if (c == '+' || c == '-')
         {
             if (i != 0 || signPresent) return false;
             signPresent = true;
         }
+        // ensures proper location of decimal
         else if (c == '.')
         {
             if (decimalPresent || i == 0 || i == expression.size() - 1) return false;
             decimalPresent = true;
         }
+        // verifies digit status
         else if (isDigit(c))
         {
             digitPresent = true;
@@ -106,9 +116,10 @@ bool isValidDouble(const std::string &expression)
 }
 std::string add(const std::string a, const std::string b)
 {
+    // case if a and b are negative
     bool negative_a = a[0] == '-';
     bool negative_b = b[0] == '-';
-
+    // handles the negative values by subtracting or adding then putting - in front
     std::string val_a = negative_a ? a.substr(1) : a;
     std::string val_b = negative_b ? b.substr(1) : b;
 
@@ -146,10 +157,10 @@ std::string add(const std::string a, const std::string b)
     std::string decimal_a = parsed_a.second;
     std::string whole_b = parsed_b.first;
     std::string decimal_b = parsed_b.second;
-
+    // adds padded zeros depending on where they are needed
     while (decimal_a.size() < decimal_b.size()) decimal_a += '0';
     while (decimal_b.size() < decimal_a.size()) decimal_b += '0';
-
+    // creates sum for decimals
     std::string decimal_sum = "";
     int carry = 0;
     for (int i = decimal_a.size() - 1; i >= 0; i--)
@@ -158,7 +169,7 @@ std::string add(const std::string a, const std::string b)
         carry = digit_sum / 10;
         decimal_sum.insert(decimal_sum.begin(), (digit_sum % 10) + '0');
     }
-
+    // creates sum for whole numbers
     std::string whole_sum = "";
     int index_a = whole_a.size() - 1;
     int index_b = whole_b.size() - 1;
@@ -170,11 +181,13 @@ std::string add(const std::string a, const std::string b)
         carry = digit_sum / 10;
         whole_sum.insert(whole_sum.begin(), (digit_sum % 10) + '0');
     }
+    // returns string of whole and decimal sum
     return whole_sum + "." + decimal_sum;
 }
 
 std::string subtract(const std::string a, const std::string b)
 {
+    // handles subtraction with negatives
     bool negative_a = !a.empty() && a[0] == '-';
     bool negative_b = !b.empty() && b[0] == '-';
 
@@ -193,7 +206,7 @@ std::string subtract(const std::string a, const std::string b)
     std::string decimal_a = parsed_a.second;
     std::string whole_b = parsed_b.first;
     std::string decimal_b = parsed_b.second;
-
+    // adds zero padding
     while (decimal_a.size() < decimal_b.size()) decimal_a += '0';
     while (decimal_b.size() < decimal_a.size()) decimal_b += '0';
 
