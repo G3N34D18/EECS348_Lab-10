@@ -70,10 +70,15 @@ double parse_number(const std::string &expression)
 
     return result;
 }
+bool isDigit(char c)
+{
+    return c >= '0' && c <= '9';
+}
 bool isValidDouble(const std::string &expression)
 {
     bool signPresent = false;
     bool decimalPresent = false;
+    bool digitPresent = false;
 
     for (size_t i = 0; i < expression.size(); i++)
     {
@@ -88,12 +93,16 @@ bool isValidDouble(const std::string &expression)
             if (decimalPresent || i == 0 || i == expression.size() - 1) return false;
             decimalPresent = true;
         }
-        else if (!isdigit(c))
+        else if (isDigit(c))
+        {
+            digitPresent = true;
+        }
+        else
         {
             return false;
         }
     }
-    return true;
+    return digitPresent;
 }
 std::string add(const std::string a, const std::string b)
 {

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <cctype>
 
 #include "calculator.hpp"
 
@@ -20,7 +21,10 @@ int main(int argc, char *argv[]) {
     }
     std::string line;
     while (std::getline(file, line))
-    {
+    {   
+        line.erase(0, line.find_first_not_of(" \t\r\n"));
+        line.erase(line.find_last_not_of(" \t\r\n") + 1);
+        
         if (isValidDouble(line))
         {
             std::string returnVal = add(line, "-123.456");
@@ -30,8 +34,8 @@ int main(int argc, char *argv[]) {
         {
             std::cout << "Line: " << line << " is an invalid double value." << std::endl;
         }
-        file.close();
-        return 0;
-    }
 
+    }
+    file.close();
+    return 0;
 }
