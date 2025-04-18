@@ -2,7 +2,7 @@
 #include <string>
 #include <utility>
 
-std::pair<std::string, std::string> parse_number(const std::string &expression) 
+std::pair<std::string, std::string> parse_num(const std::string &expression) 
 { 
     std::string whole = "";
     std::string decimal = "";
@@ -24,6 +24,51 @@ std::pair<std::string, std::string> parse_number(const std::string &expression)
         decimal = "0";
     }
     return {whole, decimal};
+}
+
+double parse_number(const std::string &expression)
+{
+    
+    bool is_negative = false;
+    size_t start_index = 0;
+
+    if (expression[0] == '-') {
+        is_negative = true;
+        start_index = 1;
+    } else if (expression[0] == '+') {
+        start_index = 1; 
+    }
+
+    std::string whole_part = "";
+    std::string decimal_part = "";
+    size_t decimal_pos = expression.find('.');
+
+    if (decimal_pos != std::string::npos) {
+        whole_part = expression.substr(start_index, decimal_pos - start_index);
+        decimal_part = expression.substr(decimal_pos + 1);
+    } else {
+        whole_part = expression.substr(start_index);
+    }
+
+    double result = 0.0;
+    for (char c : whole_part) {
+        result = result * 10 + (c - '0');
+    }
+
+    double decimal_value = 0.0;
+    double place_value = 0.1;
+    for (char c : decimal_part) {
+        decimal_value += (c - '0') * place_value;
+        place_value *= 0.1;
+    }
+
+    result += decimal_value;
+
+    if (is_negative) {
+        result = -result;
+    }
+
+    return result;
 }
 bool isValidDouble(const std::string &expression)
 {
@@ -85,8 +130,8 @@ std::string add(const std::string a, const std::string b)
             return "-" + subtract(val_b, val_a);
         }
     }
-    std::pair<std::string, std::string> parsed_a = parse_number(a);
-    std::pair<std::string, std::string> parsed_b = parse_number(b);
+    std::pair<std::string, std::string> parsed_a = parse_num(a);
+    std::pair<std::string, std::string> parsed_b = parse_num(b);
 
     std::string whole_a = parsed_a.first;
     std::string decimal_a = parsed_a.second;
@@ -132,8 +177,8 @@ std::string subtract(const std::string a, const std::string b)
         return add(a, b.substr(1));
     }
 
-    std::pair<std::string, std::string> parsed_a = parse_number(a);
-    std::pair<std::string, std::string> parsed_b = parse_number(b);
+    std::pair<std::string, std::string> parsed_a = parse_num(a);
+    std::pair<std::string, std::string> parsed_b = parse_num(b);
 
     std::string whole_a = parsed_a.first;
     std::string decimal_a = parsed_a.second;
@@ -190,7 +235,7 @@ std::string subtract(const std::string a, const std::string b)
 std::string multiply(const std::string a, const std::string b)
 {
     std::string product = "0";
-    std::pair<std::string, std::string> parsed_b = parse_number(b);
+    std::pair<std::string, std::string> parsed_b = parse_num(b);
     std::string whole_b = parsed_b.first;
     std::string decimal_b = parsed_b.second;
 
